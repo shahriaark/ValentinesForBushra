@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Valentine</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to bottom, #8B0000, #FF69B4);
+      transition: background 0.5s;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-align: center;
+      margin-top: 20px;
+      background: linear-gradient(45deg, #FF0000, #FF1493);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px #FF1493;
+      transition: all 0.5s;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 50px;
+    }
+
+    button {
+      font-size: 1.5rem;
+      padding: 10px 30px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, font-size 0.2s;
+      color: #8B0000;
+      background-color: #FFC0CB;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      transform: rotate(-45deg);
+      animation: floatUp linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: inherit;
+      border-radius: 50%;
+    }
+
+    .heart::before { top: -10px; left: 0; }
+    .heart::after { top: 0; left: 10px; }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(-45deg); opacity: 1; }
+      100% { transform: translateY(-1200px) rotate(-45deg); opacity: 0; }
+    }
+
+    /* Final message */
+    #finalMessage {
+      display: none;
+      color: #FF69B4;
+      font-size: 4rem;
+      text-align: center;
+      text-shadow: 0 0 20px #FF0000, 0 0 40px #FF1493;
+      opacity: 0;
+      transition: opacity 2s ease-in-out;
+    }
+
+    /* Bottom-right signature */
+    #signature {
+      display: none;
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 1rem;
+      color: #FFC0CB;
+      text-shadow: 0 0 5px #FF1493;
+    }
+
+    /* Explosion hearts */
+    .explode-heart {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background-color: pink;
+      transform: rotate(-45deg);
+      border-radius: 50%;
+      animation: explode 1s forwards;
+    }
+
+    @keyframes explode {
+      0% { opacity: 1; transform: translate(0,0) scale(1) rotate(-45deg);}
+      100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(2) rotate(360deg);}
+    }
+  </style>
+</head>
+<body>
+  <h1>Will You Be My Valentine?</h1>
+  <div class="buttons">
+    <button class="yes" onclick="yesClicked(this)">Yes</button>
+    <button class="no" onclick="noClicked(this)">No</button>
+  </div>
+
+  <div id="finalMessage">Happy Valentines Day Baby ❤️</div>
+  <div id="signature">made by Riddhi for Bushra</div>
+
+  <script>
+    const yesMessagesBeforePrompt = [
+      "Yes ❤️", "I'm Ready!!", "bruh i said yes..", "aii bruh this is too much", 
+      "NOT TOO MUCH FOR YOU", "ill keep going", "when does this get better", 
+      "aii bro its getting a lil too much", 
+      "ITS OKAY I LOVE YOU AND HERE TO SHOW YOU HOW MUCH I LOVE YOU", 
+      "aii bro this a lil too much..."
+    ];
+
+    const yesMessagesAfterPrompt = [
+      "aint no way u made a verification password..", 
+      "ILL PROVE how much I love you just by me going", 
+      "dam how much time did u spend on ts...", 
+      "dam is this a test or sum", 
+      "fuck it im too deep ima keep going", 
+      "IM READY", "TO BE", "RIDDHIS", "MATHAFACKIN", "VALENTINE!!!!!!!"
+    ];
+
+    let clickCount = 0;
+    let yesButtonSize = 1.5;
+    let heartsInterval;
+
+    function noClicked(button) {
+      button.style.display = 'none';
+    }
+
+    function yesClicked(button) {
+      clickCount++;
+
+      // Remove the No button immediately after first click
+      const noButton = document.querySelector('.no');
+      if (noButton) {
+        noButton.style.display = 'none';
+      }
+
+      if (clickCount <= 10) {
+        button.textContent = yesMessagesBeforePrompt[clickCount-1] || "Yes";
+      } else if (clickCount === 11) {
+        button.style.display = 'none';
+        setTimeout(() => {
+          let answer = prompt("Type 'I love Riddhi' to continue!");
+          if (answer && answer.toLowerCase() === "i love riddhi") {
+            button.style.display = 'inline-block';
+            button.textContent = yesMessagesAfterPrompt[0];
+            yesButtonSize += 0.3;
+            button.style.fontSize = yesButtonSize + "rem";
+          } else {
+            alert("Oops! Try again later!");
+          }
+        }, 100);
+        return;
+      } else if (clickCount > 11 && clickCount <= 20) {
+        let index = clickCount - 11;
+        button.textContent = yesMessagesAfterPrompt[index] || "IM READY TO BE YOUR VALENTINE BABY!";
+        yesButtonSize += 0.3;
+        button.style.fontSize = yesButtonSize + "rem";
+
+        if (clickCount === 20) {
+          triggerExplosion();
+        }
+      }
+    }
+
+    function triggerExplosion() {
+      document.querySelector('.buttons').style.display = 'none';
+      document.querySelector('h1').style.display = 'none';
+
+      // Stop background hearts
+      clearInterval(heartsInterval);
+
+      // Remove all existing hearts
+      document.querySelectorAll('.heart').forEach(h => h.remove());
+
+      // Create explosion hearts
+      for (let i = 0; i < 100; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('explode-heart');
+        const x = (Math.random() - 0.5) * 1000 + "px";
+        const y = (Math.random() - 0.5) * 1000 + "px";
+        heart.style.setProperty('--x', x);
+        heart.style.setProperty('--y', y);
+        heart.style.left = window.innerWidth/2 + 'px';
+        heart.style.top = window.innerHeight/2 + 'px';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1000);
+      }
+
+      document.body.style.background = "black";
+
+      setTimeout(() => {
+        document.getElementById('finalMessage').style.display = 'block';
+        document.getElementById('finalMessage').style.opacity = 1;
+        document.getElementById('signature').style.display = 'block';
+        heartsInterval = setInterval(createHeart, 150);
+      }, 5000);
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      const size = Math.random() * 20 + 20;
+      heart.style.width = `${size}px`;
+      heart.style.height = `${size}px`;
+      heart.style.backgroundColor = Math.random() > 0.5 ? '#FF1493' : '#8B0000';
+      heart.style.left = Math.random() * window.innerWidth + 'px';
+      heart.style.top = window.innerHeight + 'px';
+      heart.style.animationDuration = '6s';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }
+
+    heartsInterval = setInterval(createHeart, 150);
+  </script>
+</body>
+</html>
+
